@@ -1,12 +1,12 @@
-## POST INSTALLATION
+# POST INSTALLATION
 
 In post installation we will be using a lot of `sudo`. I'm not responsible if you broke your newly installed system. Remember that this guide is *for* ***future me***.
 
-### Connect to the internet
+## Connect to the internet
 
 We will be downloading stuff so we need an internet connection! So set-up your connection first!
 
-### Check for Updates
+## Check for Updates
 
 It's recommended to check for updates first before installing anything so:
 
@@ -14,7 +14,7 @@ It's recommended to check for updates first before installing anything so:
 # pacman -Syu
 ```
 
-### Display Server and Protocol
+## Display Server and Protocol
 
 We need to install a display server, a protocol or both. Normally, your desktop environment or window manager of choice will automatically install these as a dependency. But for this guide's sake we will install `X` server:
 
@@ -24,7 +24,7 @@ We need to install a display server, a protocol or both. Normally, your desktop 
 
 If you're planning to use a window manager like `awesome`, `bspwm` or `i3`, you should install X. While if you're planning to use `sway`, then wayland it is. If `GNOME`, you can install both. Again, your environment of choice will automatically install these as its dependencies.
 
-#### Video Drivers
+### Video Drivers
 
 After installing the graphical server, we need to install the video drivers. I'm only using an integrated intel graphics card. **Sobs.** So an intel driver is what I need.
 
@@ -45,13 +45,13 @@ Then add `i915` to the `MODULES`:
 MODULES=(i915 ...)
 ```
 
-#### Audio Drivers
+### Audio Drivers
 
 ```
 # pacman -S alsa-utils pulseaudio-alsa pulseaudio-bluetooth pulseaudio pavucontrol
 ```
 
-#### File System Tools
+### File System Tools
 
 File system tools
 
@@ -67,7 +67,7 @@ android-udev mtpfs xdg-user-dirs
 ```
 
 
-#### Git
+### Git
 
 If you didn't include `git` on `pacstrap` earlier, it's time to install it now. This tool will come in handy later:
 
@@ -75,7 +75,7 @@ If you didn't include `git` on `pacstrap` earlier, it's time to install it now. 
 # pacman -S git
 ```
 
-#### AUR Helper
+### AUR Helper
 
 The "later" is now, old man. We will now install an AUR helper, `yay`.
 
@@ -87,7 +87,7 @@ $ cd yay-bin/
 $ makepkg -sri
 ```
 
-#### Missing Kernel Modules
+### Missing Kernel Modules
 
 If you noticed, there's a warning message while running `mkinitcpio -p linux`, fix this by installing these firmwares:
 
@@ -97,7 +97,7 @@ $ yay -S wd719x-firmware aic94xx-firmware --removemake --noconfirm
 ```
 
 
-#### Desktop Environment and Window Manager
+### Desktop Environment and Window Manager
 
 Install your preferred desktop environment or window manager. 
 
@@ -207,7 +207,7 @@ I'm an `awesome` and `KDE Plasma` guy, but right now I am using `Plasma`. So in 
 				$ /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 				```
 
-#### Terminal Emulator
+### Terminal Emulator
 
 After installing an environment, we need a terminal emulator. Every linux user's first partner. Note that we're still on the `TTY`.
 
@@ -227,7 +227,7 @@ After installing an environment, we need a terminal emulator. Every linux user's
 	# pacman -S kitty xterm
 	```
 
-#### GTK
+### GTK
 
 GTK, or the GIMP Toolkit, is a multi-platform toolkit for creating graphical user interfaces.
 
@@ -243,7 +243,7 @@ Install GTK engines
 # pacman -S gtk-engine-murrine gtk-engines gnome-theme-extra
 ```
 
-#### File Managers
+### File Managers
 
 KDE's `dolphin` is the best file manager in the Linux world, imho. So I always use this no matter what environment I'm using. We will also install `ranger`, a CLI-based file manager.
 
@@ -271,7 +271,7 @@ Enable preview showing of required file type in *Settings > Configure Dolphin...
 There's a lot more thumbnail generators that can be found from the AUR (like a generator to create a thumbnail for `APK` files), but I don't really use them.
 
 
-#### GUI-based Text Editors
+### GUI-based Text Editors
 
 `vim` is my text editor of choice, but sublime Text 3 is my go-to GUI text editor as it's lighter than the ~~bloated~~ chromium-based counterparts like `atom` and `vscode`.
 
@@ -281,7 +281,7 @@ $ yay -S sublime-text-dev
 
 Note that Sublime is not "free" and needs a license.
 
-#### Web browsers
+### Web browsers
 
 `Firefox` and `w3m` are my trusty web browsers.
 
@@ -295,7 +295,7 @@ I also install `google-chrome` as my back up web browser:
 $ yay -S google-chrome
 ```
 
-#### Bluetooth
+### Bluetooth
 
 If you're using KDE Plasma, you don't need to do these:
 
@@ -324,7 +324,7 @@ Blueman automatically enables Bluetooth adapter when certain events (on boot, la
 $ gsettings set org.blueman.plugins.powermanager auto-power-on false
 ```
 
-#### Microcode
+### Microcode
 
 Processor manufacturers release stability and security updates to the processor microcode. These updates provide bug fixes that can be critical to the stability of your system. Without them, you may experience spurious crashes or unexpected system halts that can be difficult to track down. 
 
@@ -361,7 +361,7 @@ initrd  /initramfs-linux.img
 Change `CPU_MANUFACTURER` with either `amd` or `intel` depending on your processor.
 
 
-#### Plymouth
+### Plymouth
 
 Plymouth provides a flicker-free graphical boot process. In short, a splash screen.
 
@@ -434,7 +434,7 @@ Plymouth provides a flicker-free graphical boot process. In short, a splash scre
 	options quiet splash fbcon=nodefer
 	```
 
-#### Display Manager
+### Display Manager
 
 A display manager, or login manager, is typically a graphical user interface that is displayed at the end of the boot process in place of the default shell.
 
@@ -494,7 +494,7 @@ A display manager, or login manager, is typically a graphical user interface tha
 
 			Find `webkit_theme` then set its value to `glorious`. Find `debug_mode` then set it to true. If you encountered an error, right-click then reload.
 
-#### Silent boot
+### Silent boot
 
 This is for who prefer to limit the verbosity of their system to a strict minimum, either for aesthetics or other reasons. For me, it's aesthetics. 
 
@@ -520,7 +520,7 @@ options quiet splash fbcon=nodefer
 
 Remove `splash` if you're not using `plymouth`.
 
-#### Install and Configure Network Manager
+### Install and Configure Network Manager
 
 As of now, we're using `iwd` if we're using wireless connection and `dhcpcd` if we're on wired connection.
 
@@ -555,7 +555,7 @@ As of now, we're using `iwd` if we're using wireless connection and `dhcpcd` if 
 	# systemctl enable --now NetworkManger
 	```
 
-#### Reboot then Login
+### Reboot then Login
 
 The system's fully functional! You can now login to you system with all the configuration we've done so far. 
 
@@ -565,7 +565,7 @@ $ reboot
 
 ## Extras
 
-#### Power Management for Laptops
+### Power Management for Laptops
 
 TLP brings you the benefits of advanced power management for Linux without the need to understand every technical detail. **This is for laptops.**
 
@@ -588,7 +588,7 @@ Enable acpid
 # systemctl enable acpid.service
 ```
 
-#### Fan Control for Thinkpad
+### Fan Control for Thinkpad
 
 **For thinkpad users**, install `thinkfan` here.
 
@@ -643,7 +643,7 @@ To find the best thinkfan configuration for you, search it on the internet. I fo
 # systemctl enable thinkfan.service
 ```
 
-#### Enable MAC randomization
+### Enable MAC randomization
 
 MAC randomization can be used for increased privacy by not disclosing your real MAC address to the network. 
 
@@ -678,7 +678,7 @@ MAC randomization can be used for increased privacy by not disclosing your real 
 		```
 
 
-#### Firewall
+### Firewall
 
 We'll use `Uncomplicated Firewall` or `ufw` for short.
 
@@ -712,7 +712,7 @@ Adding other applications. The PKG comes with some defaults based on the default
 # ufw app list
 ```
 
-#### Fonts
+### Fonts
 
 Improve fonts.
 
