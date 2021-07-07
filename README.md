@@ -163,7 +163,7 @@ In this guide, I'll create a two different ways to partition a drive. One for a 
 	- Also hit enter for the GUID to select default(`8300`).
 	- Then set name of the partition to `root`.
 
-+ Create the `root` partition
++ Create the `home` partition
 
 	- Hit New again.
 	- Hit enter to select the default option for the first sector.
@@ -227,8 +227,8 @@ You should see *something like this*:
 **`sda`** is the main disk  
 **`sda1`** is the boot partition  
 **`sda2`** is the swap partition  
-**`sda3`** is the home partition  
-**`sda4`** is the root partition
+**`sda3`** is the root partition  
+**`sda4`** is the home partition
 
 ### Encrypted filesystem
 
@@ -495,10 +495,10 @@ Now, change root into the newly installed system
 
 ## Time zone
 
-A selection of timezones can be found under `/usr/share/zoneinfo/`. Since I am in the Philippines, I will be using `/usr/share/zoneinfo/Asia/Manila`. Select the appropriate timezone for your country:
+A selection of timezones can be found under `/usr/share/zoneinfo/`. Since I am in the Philippines, I will be using `/usr/share/zoneinfo/Europe/Kaliningrad`. Select the appropriate timezone for your country:
 
 ```
-# ln -sf /usr/share/zoneinfo/Asia/Manila /etc/localtime
+# ln -sf /usr/share/zoneinfo/Enrope/Kaliningrad /etc/localtime
 ```
 
 Run `hwclock` to generate `/etc/adjtime`: 
