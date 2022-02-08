@@ -16,22 +16,22 @@ Before installing, make sure to:
 
 The default console keymap is US. Available layouts can be listed with:
 
-```
-# ls /usr/share/kbd/keymaps/**/*.map.gz
+```bash
+ls /usr/share/kbd/keymaps/**/*.map.gz
 ```
 
 To modify the layout, append a corresponding file name to loadkeys, omitting path and file extension. For example, to set a US keyboard layout:  
 
-```
-# loadkeys us
+```bash
+loadkeys us
 ```
 
 ## Verify the boot mode
 
 If UEFI mode is enabled on an UEFI motherboard, Archiso will boot Arch Linux accordingly via systemd-boot. To verify this, list the efivars directory:  
 
-```
-# ls /sys/firmware/efi/efivars
+```bash
+ls /sys/firmware/efi/efivars
 ```
 
 If the command shows the directory without error, then the system is booted in UEFI mode. If the directory does not exist, the system may be booted in **BIOS** (or **CSM**) mode.
@@ -40,8 +40,8 @@ If the command shows the directory without error, then the system is booted in U
 
 We need to make sure that we are connected to the internet to be able to install Arch Linux `base` and `linux` packages. Let’s see the names of our interfaces.
 
-```
-# ip link
+```bash
+ip link
 ```
 
 You should see something like this:
@@ -62,8 +62,8 @@ You should see something like this:
 
 If you are on a wired connection, you can enable your wired interface by systemctl start `dhcpcd@<interface>`.  
 
-```
-# systemctl start dhcpcd@enp0s0
+```bash
+systemctl start dhcpcd@enp0s0
 ```
 
 ### Wireless Connection
@@ -72,26 +72,26 @@ If you are on a laptop, you can connect to a wireless access point using `iwctl`
 
 Scan for network.
 
-```
-# iwctl station wlan0 scan
+```bash
+iwctl station wlan0 scan
 ```
 
 Get the list of scanned networks by:
 
-```
-# iwctl station wlan0 get-networks
+```bash
+iwctl station wlan0 get-networks
 ```
 
 Connect to your network.
 
-```
-# iwctl -P "PASSPHRASE" station wlan0 connect "NETWORKNAME"
+```bash
+iwctl -P "PASSPHRASE" station wlan0 connect "NETWORKNAME"
 ```
 
 Ping archlinux website to make sure we are online:
 
-```
-# ping archlinux.org
+```bash
+ping archlinux.org
 ``` 
 
 If you receive Unknown host or Destination host unreachable response, means you are not online yet. Review your network configuration and redo the steps above.
@@ -100,8 +100,8 @@ If you receive Unknown host or Destination host unreachable response, means you 
 
 Use `timedatectl` to ensure the system clock is accurate:
 
-```
-# timedatectl set-ntp true
+```bash
+timedatectl set-ntp true
 ```
 
 To check the service status, use `timedatectl status`.
@@ -110,8 +110,8 @@ To check the service status, use `timedatectl status`.
 
 When recognized by the live system, disks are assigned to a block device such as `/dev/sda`, `/dev/nvme0n1` or `/dev/mmcblk0`. To identify these devices, use lsblk or fdisk.  The most common main drive is **sda**.
 
-```
-# lsblk
+```bash
+lsblk
 ```
 
 Results ending in `rom`, `loop` or `airoot` may be ignored.
@@ -208,8 +208,8 @@ In this guide, I'll create a two different ways to partition a drive. One for a 
 
 Use `lsblk` again to check the partitions we created. *We? I thought I'm doing this guide for myself lol*
 
-```
-# lsblk
+```bash
+lsblk
 ```
 
 You should see *something like this*:
@@ -424,8 +424,8 @@ You should see *something like this*:
 
 Now let’s go ahead and install `base`, `linux`, `linux-firmware`, and `base-devel` packages into our system. 
 
-```
-# pacstrap /mnt base base-devel linux linux-firmware
+```bash
+pacstrap /mnt base base-devel linux linux-firmware
 ```
 
 The `base` package does not include all tools from the live installation, so installing other packages may be necessary for a fully functional base system. In particular, consider installing: 
@@ -479,8 +479,8 @@ These tools will be useful later. So **future me**, install these.
 
 ## Generating the fstab
 
-```
-# genfstab -U /mnt >> /mnt/etc/fstab
+```bash
+genfstab -U /mnt >> /mnt/etc/fstab
 ```
 
 Check the resulting `/mnt/etc/fstab` file, and edit it in case of errors. 
@@ -489,22 +489,22 @@ Check the resulting `/mnt/etc/fstab` file, and edit it in case of errors.
 
 Now, change root into the newly installed system  
 
-```
-# arch-chroot /mnt /bin/bash
+```bash
+arch-chroot /mnt /bin/bash
 ```
 
 ## Time zone
 
 A selection of timezones can be found under `/usr/share/zoneinfo/`. Since I am in the Philippines, I will be using `/usr/share/zoneinfo/Europe/Kaliningrad`. Select the appropriate timezone for your country:
 
-```
-# ln -sf /usr/share/zoneinfo/Enrope/Kaliningrad /etc/localtime
+```bash
+ln -sf /usr/share/zoneinfo/Europe/Kaliningrad /etc/localtime
 ```
 
 Run `hwclock` to generate `/etc/adjtime`: 
 
-```
-# hwclock --systohc
+```bash
+hwclock --systohc
 ```
 
 This command assumes the hardware clock is set to UTC.
@@ -513,22 +513,22 @@ This command assumes the hardware clock is set to UTC.
 
 The `locale` defines which language the system uses, and other regional considerations such as currency denomination, numerology, and character sets. Possible values are listed in `/etc/locale.gen`. Uncomment `en_US.UTF-8`, as well as other needed localisations.
 
-**Uncomment** `en_US.UTF-8 UTF-8` and other needed locales in `/etc/locale.gen`, **save**, and generate them with:  
+**Run** `sed -i '177s/.//' /etc/locale.gen` (177 line is `en_US.UTF-8`)
 
-```
-# locale-gen
+```bash
+locale-gen
 ```
 
 Create the `locale.conf` file, and set the LANG variable accordingly:  
 
-```
-# locale > /etc/locale.conf
+```bash
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
 ```
 
 If you set the keyboard layout earlier, make the changes persistent in `vconsole.conf`:
 
-```
-# echo "KEYMAP=us" > /etc/vconsole.conf
+```bash
+echo "KEYMAP=us" > /etc/vconsole.conf
 ```
 
 Not using `us` layout? Replace it, stoopid.
@@ -537,16 +537,16 @@ Not using `us` layout? Replace it, stoopid.
 
 Create the hostname file. In this guide I'll just use `MYHOSTNAME` as hostname. Hostname is the host name of the host. Every 60 seconds, a minute passes in Africa.
 
-```
-# echo "MYHOSTNAME" > /etc/hostname
+```bash
+echo "MYHOSTNAME" > /etc/hostname
 ```
 
 Open `/etc/hosts` to add matching entries to `hosts`:
 
-```
-127.0.0.1    localhost  
-::1          localhost  
-127.0.1.1    MYHOSTNAME.localdomain	  MYHOSTNAME
+```bash
+echo "127.0.0.1    localhost" >> /etc/hosts
+echo "::1          localhost" >> /etc/hosts
+echo "127.0.1.1    MYHOSTNAME.localdomain	  MYHOSTNAME" >> /etc/hosts
 ```
 
 If the system has a permanent IP address, it should be used instead of `127.0.1.1`.
@@ -557,9 +557,9 @@ Creating a new initramfs is usually not required, because mkinitcpio was run on 
 
 ### Unencrypted filesystem
 
-	```
-	# mkinitcpio -p linux
-	```
+```bash
+mkinitcpio -p linux
+```
 
 ### Encrypted filesystem with LVM/LUKS
 
@@ -629,8 +629,8 @@ ILoveCandy
 
 To check if you successfully added the repositories and enable the easter-eggs, run:
 
-```
-# pacman -Syu
+```bash
+pacman -Syu
 ```
 
 If updating returns an error, open the `pacman.conf` again and check for human errors. Yes, you f'ed up big time.
@@ -639,38 +639,38 @@ If updating returns an error, open the `pacman.conf` again and check for human e
 
 Set the `root` password:  
 
-```
-# passwd
+```bash
+passwd
 ```
 
 ## Add a user account
 
 Add a new user account. In this guide, I'll just use `MYUSERNAME` as the username of the new user aside from `root` account. (My phrasing seems redundant, eh?) Of course, change the example username with your own:  
 
-```
-# useradd -m -g users -G wheel,storage,power,video,audio,rfkill,input -s /bin/bash MYUSERNAME
+```bash
+useradd -m -g users -G wheel,storage,power,video,audio,rfkill,input -s /bin/bash MYUSERNAME
 ```
 
 This will create a new user and its `home` folder.
 
 Set the password of user `MYUSERNAME`:  
 
-```
-# passwd MYUSERNAME
+```bash
+passwd MYUSERNAME
 ```
 
 ## Add the new user to sudoers:
 
 If you want a root privilege in the future by using the `sudo` command, you should grant one yourself:
 
-```
-# EDITOR=vim visudo
+```bash
+EDITOR=vim visudo
 ```
 
 Uncomment the line (Remove #):
 
-```
-# %wheel ALL=(ALL) ALL
+```bash
+%wheel ALL=(ALL) ALL
 ```
 
 ## Install the boot loader
@@ -690,10 +690,11 @@ Yeah, this is where we install the bootloader. We will be using `systemd-boot`, 
 ### Unencrypted filesystem
 
 	```
-	title Arch Linux  
-	linux /vmlinuz-linux  
-	initrd  /initramfs-linux.img  
-	options root=/dev/sda3 rw
+	title   Arch Linux
+	linux   /vmlinuz-linux
+	initrd  /intel-ucode.img
+	initrd  /initramfs-linux.img
+	options root=/dev/sda3 rootfstype=ext4 rw
 	```
 
 	If your `/` is not in `/dev/sda3`, make sure to change it. 
@@ -707,9 +708,9 @@ Remember the two-types of initramfs earlier? Each type needs a specific kernel p
 + udev-based initramfs
 
 	```
-	title Arch Linux  
-	linux /vmlinuz-linux  
-	initrd  /initramfs-linux.img  
+	title Arch Linux
+	linux /vmlinuz-linux
+	initrd /initramfs-linux.img
 	options cryptdevice=UUID=/DEV/SDA2/UUID/HERE:volume root=/dev/mapper/volume-root rw
 	```
 
@@ -735,8 +736,8 @@ Remember the two-types of initramfs earlier? Each type needs a specific kernel p
 
 Update bootloader configuration
 
-```
-# vim /boot/loader/loader.conf
+```bash
+vim /boot/loader/loader.conf
 ```
 
 Delete all of its content, then replaced it by:
@@ -752,8 +753,8 @@ editor no
 
 To enable the network daemons on your next reboot, you need to enable `dhcpcd.service` for wired connection and `iwd.service` for a wireless one.
 
-```
-# systemctl enable dhcpcd iwd
+```bash
+systemctl enable dhcpcd iwd
 ```
 
 ## Exit chroot and reboot:  
@@ -766,4 +767,4 @@ Finally, `reboot`.
 
 If your installation is a success, then ***yay!!!*** If not, you should start questioning your own existence. Are your parents proud of you? 
 
-## [[POST INSTALLATION]](./POST.md)		[[EXTRAS]](./EXTRAS.md)
+## [[POST INSTALLATION]](./POST.md) [[EXTRAS]](./EXTRAS.md)
