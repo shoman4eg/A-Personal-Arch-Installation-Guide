@@ -120,18 +120,18 @@ In this guide, I'll create a two different ways to partition a drive. One for a 
 
 ### Unencrypted filesystem
 
-+ Let’s clean up our main drive to create new partitions for our installation. And yeah, in this guide, we will use `/dev/sda` as our disk.
++ Let’s clean up our main drive to create new partitions for our installation. And yeah, in this guide, we will use `/dev/nvme0n1` as our disk.
 
-	```
-	# gdisk /dev/sda
+	```bash
+	 gdisk /dev/nvme0n1
 	```
 
 + Press <kbd>x</kbd> to enter **expert mode**. Then press <kbd>z</kbd> to *zap* our drive. Then hit <kbd>y</kbd> when prompted about wiping out GPT and blanking out MBR. Note that this will ***zap*** your entire drive so your data will be gone - reduced to atoms after doing this. THIS. CANNOT. BE. UNDONE.
 
 + Open `cgdisk` to start partitioning our filesystem
 
-	```
-	# cgdisk /dev/sda
+	```bash
+	 cgdisk /dev/nvme0n1
 	```
 
 + Press <kbd>Return</kbd> when warned about damaged GPT.
@@ -143,7 +143,7 @@ In this guide, I'll create a two different ways to partition a drive. One for a 
 	- Hit New from the options at the bottom.
 	- Just hit enter to select the default option for the first sector.
 	- Now the partion size - Arch wiki recommends 200-300 MB for the boot + size. Let’s make 1GiB in case we need to add more OS to our machine. I’m gonna assign mine with 1024MiB. Hit enter.
-	- Set GUID to `EF00`. Hit enter.
+	- Set GUID to `ef00`. Hit enter.
 	- Set name to `boot`. Hit enter.
 	- Now you should see the new partition in the partitions list with a partition type of EFI System and a partition name of boot. You will also notice there is 1007KB above the created partition. That is the MBR. Don’t worry about that and just leave it there.
 
@@ -177,16 +177,16 @@ In this guide, I'll create a two different ways to partition a drive. One for a 
 
 + Let’s clean up our main drive to create new partitions for our installation. And yeah, in this guide, we will use `/dev/sda` as our disk.
 
-	```
-	# gdisk /dev/sda
+	```bash
+	 gdisk /dev/sda
 	```
 
 + Press <kbd>x</kbd> to enter **expert mode**. Then press <kbd>z</kbd> to *zap* our drive. Then hit <kbd>y</kbd> when prompted about wiping out GPT and blanking out MBR. Note that this will ***zap*** your entire drive so your data will be gone - reduced to atoms after doing this. THIS. CANNOT. BE. UNDONE.
 
 + Create our partitions by running `cgdisk /dev/sda`
 
-	```
-	# cgdisk /dev/sda
+	```bash
+	 cgdisk /dev/sda
 	```
 
 + Just press <kbd>Return</kbd> when warned about damaged GPT.
@@ -250,44 +250,44 @@ You should see *something like this*:
 
 + Format `/dev/sda1` partition as `FAT32`. This will be our `/boot`.
 
-	```
-	# mkfs.fat -F32 /dev/sda1
+	```bash
+	 mkfs.fat -F32 /dev/sda1
 	```
 
 + Create and enable our `swap` under the `/dev/sda2` partition.
 
-	```
-	# mkswap /dev/sda2
-	# swapon /dev/sda2
+	```bash
+	mkswap /dev/sda2
+	swapon /dev/sda2
 	```
 
 + Format `/dev/sda3` and `/dev/sda4` partition as `EXT4`. This will be our `root` and `home`  partition.
 
-	```
-	# mkfs.ext4 /dev/sda3
-	# mkfs.ext4 /dev/sda4
+	```bash
+	mkfs.ext4 /dev/sda3
+	mkfs.ext4 /dev/sda4
 	```
 
 ### Encrypted filesystem
 
 + Format `/dev/sda1` partition as `FAT32`. This will be our `/boot`.
 
-	```
-	# mkfs.fat -F32 /dev/sda1
+	```bash
+	mkfs.fat -F32 /dev/sda1
 	```
 
 + Create the LUKS encrypted container.
 
-	```
-	# cryptsetup luksFormat /dev/sda2
+	```bash
+	cryptsetup luksFormat /dev/sda2
 	```
 
 + Enter your passphrase twice. Don't forget this!
 
 + Open the created container and name it whatever you want. In this guide I'll just use `cryptlvm`.
 
-	```
-	# cryptsetup open --type luks /dev/sda2 cryptlvm
+	```bash
+	cryptsetup open --type luks /dev/sda2 cryptlvm
 	```
 
 + Enter your passphrase and verify it.
@@ -296,16 +296,16 @@ You should see *something like this*:
 
 + Create a physical volume on top of the opened LUKS container:
 
-	```
-	# pvcreate /dev/mapper/cryptlvm
+	```bash
+	 pvcreate /dev/mapper/cryptlvm
 	```
 
 + Create the volume group and name it `volume` (or whatever you want), adding the previously created physical volume to it:
 
 	In this guide, I'll just use `volume` as the volume group name.
 
-	```
-	# vgcreate volume /dev/mapper/cryptlvm
+	```bash
+	 vgcreate volume /dev/mapper/cryptlvm
 	```
 
 + Create all your needed logical volumes on the volume group. We will create a `swap`, `root`, and `home` logical volumes. Note that the `volume` is the name of the volume we just created.
@@ -356,32 +356,32 @@ You should see *something like this*:
 
 + Mount the `/dev/sda` partition to `/mnt`. This is our `/`:
 
-	```
-	# mount /dev/sda3 /mnt
+	```bash
+	 mount /dev/sda3 /mnt
 	```
 
 + Create a `/boot` mountpoint:
 
-	```
-	# mkdir /mnt/boot  
+	```bash
+	 mkdir /mnt/boot  
 	```
 
 + Mount `/dev/sda1` to `/mnt/boot` partition. This is will be our `/boot`:
 
-	```
-	# mount /dev/sda1 /mnt/boot
+	```bash
+	 mount /dev/sda1 /mnt/boot
 	```
 
 + Create a `/home` mountpoint:
 
-	```
-	# mkdir /mnt/home  
+	```bash
+	 mkdir /mnt/home  
 	```
 
 + Mount `/dev/sda4` to `/mnt/home` partition. This is will be our `/home`:
 
-	```
-	# mount /dev/sda1 /mnt/home
+	```bash
+	 mount /dev/sda1 /mnt/home
 	```
 
 	We don’t need to mount `swap` since it is already enabled.  
@@ -390,32 +390,32 @@ You should see *something like this*:
 
 + Mount the `/dev/mapper/volume-root` partition to `/mnt`. This is our `/`:
 
-	```
-	# mount /dev/mapper/volume-root /mnt
+	```bash
+	 mount /dev/mapper/volume-root /mnt
 	```
 
 + Create a `/boot` mountpoint:
 
-	```
-	# mkdir /mnt/boot  
+	```bash
+	 mkdir /mnt/boot  
 	```
 
 + Mount `/dev/sda1` to `/mnt/boot` partition. This is will be our `/boot`:
 
-	```
-	# mount /dev/sda1 /mnt/boot
+	```bash
+	 mount /dev/sda1 /mnt/boot
 	```
 
 + Create a `/home` mountpoint:
 
-	```
-	# mkdir /mnt/home  
+	```bash
+	 mkdir /mnt/home  
 	```
 
 + Mount `/dev/mapper/volume-home` to `/mnt/home` partition. This is will be our `/home`:
 
-	```
-	# mount /dev/mapper/volume-home /mnt/home
+	```bash
+	 mount /dev/mapper/volume-home /mnt/home
 	```
 
 	 We don’t need to mount `swap` since it is already enabled.
@@ -681,8 +681,8 @@ Yeah, this is where we install the bootloader. We will be using `systemd-boot`, 
 	
 	We will install it in `/boot` mountpoint (`/dev/sda1` partition).
 
-	```
-	# bootctl --path=/boot install
+	```bash
+	 bootctl --path=/boot install
 	```
 
 + Create a boot entry `/boot/loader/entries/arch.conf`, then add these lines:
