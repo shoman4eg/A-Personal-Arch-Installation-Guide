@@ -513,7 +513,7 @@ This command assumes the hardware clock is set to UTC.
 
 The `locale` defines which language the system uses, and other regional considerations such as currency denomination, numerology, and character sets. Possible values are listed in `/etc/locale.gen`. Uncomment `en_US.UTF-8`, as well as other needed localisations.
 
-**Run** `sed -i '177s/.//' /etc/locale.gen` (177 line is `en_US.UTF-8`)
+**Run** `sed -e 's/#en_US.UTF/en_US.UTF/g' -e 's/#ru_RU.UTF/ru_RU.UTF/g' -i /etc/locale.gen`
 
 ```bash
 locale-gen
